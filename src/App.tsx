@@ -1,31 +1,35 @@
-import './App.css'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import Home from './components/home';
-import Blog from './components/blog';
-import Add from './components/add';
-import Article from './components/article';
+import "./App.css";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import Home from "./components/homepage/home";
+import Products from "./components/products/products";
+import Cart from "./components/cart/cart";
+import Account from "./components/account/account";
+
 
 function App() {
   return (
     <BrowserRouter>
       {/* Navigation */}
       <nav>
-        <Link to="/">Home</Link> |{" "}
-        <Link to="/blog">Blog</Link> 
+        <Link to="/">Strona główna</Link> | <Link to="/products">Wyszukaj</Link> |{" "}
+        <Link to="/cart">Koszyk</Link> | <Link to="/account">Moje Konto</Link>
       </nav>
 
       {/* Routes */}
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/blog" element={<Blog />} >
-            <Route path="article/:id" element={< Article/>} />
-            <Route path="dodaj" element={<Add />} />
-          </Route>
+          <Route path="/products" element={<Products />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="account" element={<Account />} />
         </Routes>
       </main>
+      <footer>
+      
+      </footer>
     </BrowserRouter>
+
   );
 }
 
-export default App
+export default App;
