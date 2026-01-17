@@ -1,10 +1,13 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require("../database");
 
-const BookModel = {
+const Book = sequelize.define("book", {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
   title: { type: DataTypes.STRING, allowNull: false },
-  author: { type: DataTypes.STRING, allowNull: false },
-  year: { type: DataTypes.DATE, allowNull: false },
-};
+  description: { type: DataTypes.TEXT, allowNull: true },
+  price: { type: DataTypes.REAL, allowNull: false },
+  stock: { type: DataTypes.INTEGER, defaultValue: 0 },
+  image: { type: DataTypes.STRING, allowNull: true },
+});
 
-module.exports = (sequelize) => sequelize.define('book', BookModel);
+module.exports = Book;
