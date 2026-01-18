@@ -8,6 +8,9 @@ const defineUser = require("./common/models/User");
 const { where } = require("sequelize");
 const User = defineUser(sequelize);
 
+const cors = require("cors");
+app.use(cors());
+
 app.use(express.json());
 const PORT = process.env.PORT || 3003;
 
@@ -22,9 +25,12 @@ app.post("/api/register", async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: "Brak wymaganych danych" });
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const [user, created] = await User.findOrCreate({
       where: { email },
-      defaults: { password },
+      defaults: { password: hashedPassword },
     });
 
     if (!created) {
@@ -63,7 +69,7 @@ app.post("/api/login", async (req, res) => {
     }
 
     const accessToken = generateAccessToken(user.email, user.id);
-    res.json({ token: accessToken });
+    res.json({ token: accessToken , user:{email: user.email, id:user.id}});
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Błąd podczas logowania" });

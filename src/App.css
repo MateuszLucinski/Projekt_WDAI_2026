@@ -8,8 +8,8 @@
 /* GLOBAL */
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: #f4f6f8;
-  color: #333;
+  color: #f4f6f8;
+  background: #333;
   line-height: 1.6;
 }
 
@@ -22,13 +22,13 @@ body {
 
 /* NAVIGATION */
 nav {
-  background: #ffffff;
+  background: #1c1c1c;
   padding: 1rem;
   margin-bottom: 2rem;
   border-radius: 8px;
   display: flex;
   gap: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 nav a {
@@ -44,10 +44,10 @@ nav a:hover {
 /* PAGE CONTENT */
 main,
 .page {
-  background: #ffffff;
+  background: #1c1c1c;;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
 /* HEADINGS */
@@ -70,7 +70,7 @@ li {
 }
 
 li a {
-  color: #333;
+  color: #f4f6f8;
   text-decoration: none;
 }
 

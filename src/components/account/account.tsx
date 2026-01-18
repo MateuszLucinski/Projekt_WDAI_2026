@@ -2,7 +2,7 @@ function Account(){
 
     return(
         <>
-        <h1>Tu będzie logowanie i informacje o koncie</h1>
+        <h1>Tu będą informacje o koncie hsitoria zamówień itd</h1>
         </>
     )
 }
