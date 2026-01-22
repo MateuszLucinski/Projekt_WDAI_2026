@@ -26,7 +26,6 @@ app.post("/api/register", async (req, res) => {
       return res.status(400).json({ error: "Brak wymaganych danych" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const [user, created] = await User.findOrCreate({
       where: { email },
