@@ -1,9 +1,9 @@
-const Book = require("../common/models/Books");
+const Item = require("../common/models/Items");
 
 exports.getAll = async (req, res) => {
   try {
-    const books = await Book.findAll();
-    res.json(books);
+    const items = await Item.findAll();
+    res.json(items);
   } catch (err) {
     res.status(500).json({ error: "Błąd serwera" });
   }
@@ -11,10 +11,10 @@ exports.getAll = async (req, res) => {
 
 exports.getOne = async (req, res) => {
   try {
-    const book = await Book.findByPk(req.params.id);
-    if (!book)
+    const item = await Item.findByPk(req.params.id);
+    if (!item)
       return res.status(404).json({ error: "Nie znaleziono produktu" });
-    res.json(book);
+    res.json(item);
   } catch (err) {
     res.status(500).json({ error: "Błąd serwera" });
   }
@@ -26,14 +26,14 @@ exports.create = async (req, res) => {
     if (!title || !price)
       return res.status(400).json({ error: "Brak tytułu lub ceny" });
 
-    const newBook = await Book.create({
+    const newItem = await Item.create({
       title,
       description,
       price,
       stock,
       image,
     });
-    res.status(201).json(newBook);
+    res.status(201).json(newItem);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Nie udało się dodać" });
@@ -42,7 +42,7 @@ exports.create = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    const deleted = await Book.destroy({ where: { id: req.params.id } });
+    const deleted = await Item.destroy({ where: { id: req.params.id } });
     if (!deleted)
       return res.status(404).json({ error: "Produkt nie istnieje" });
     res.json({ message: "Usunięto" });
