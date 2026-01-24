@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 interface User {
   email: string;
@@ -10,6 +11,8 @@ function Login() {
   const [email, setEmail] = useState<string>("");
   const [password1, setPassword1] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,18 +32,16 @@ function Login() {
         return response.json();
       })
       .then((data) => {
-        const session = { //informacje o zalogowaniu w localstorage
-          user: data.user,
-          token: data.token,
-          expiresAt: Date.now() + 60 * 60 * 1000, // godzina w milisekundach
-        };
-
-        localStorage.setItem("session", JSON.stringify(session));
+        // Use AuthContext to update global state
+        login(data.token, data.user);
 
         setEmail("");
         setPassword1("");
         setMessage("Zalogowane poprawnie");
         console.log("Zalogowano:", data);
+
+        // Redirect to homepage or previous protected route
+        setTimeout(() => navigate("/"), 500);
       })
       .catch((error) => {
         setMessage(error.message);
