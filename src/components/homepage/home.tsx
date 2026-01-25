@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Grid,
-  Skeleton,
-  Alert,
-} from "@mui/material";
-import { Sparkles } from "lucide-react";
+import { Box, Typography, Skeleton, Alert } from "@mui/material";
 import ProductCard from "../products/ProductCard";
-import { Product } from "../../types/types";
+import type { Product } from "../../types/types";
 
 function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -37,51 +30,49 @@ function Home() {
 
   return (
     <Box>
-      <Box
-        sx={{
-          textAlign: "center",
-          mb: 6,
-          py: 4,
-          background: "linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(236,72,153,0.1) 100%)",
-          borderRadius: 4,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mb: 2 }}>
-          <Sparkles size={32} color="#6366f1" />
-          <Typography variant="h3" component="h1" sx={{ fontWeight: 700 }}>
-            Witaj w E-Shop
-          </Typography>
-        </Box>
-        <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: "auto" }}>
-          Odkryj najlepsze produkty w atrakcyjnych cenach. Szybka dostawa i gwarancja satysfakcji.
+      <Box sx={{ textAlign: "center", mb: 4, py: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 1 }}>
+          Witaj w E-Shop
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Odkryj najlepsze produkty w atrakcyjnych cenach.
         </Typography>
       </Box>
 
-      <Typography variant="h4" component="h2" sx={{ mb: 4, fontWeight: 600 }}>
+      <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
         Polecane produkty
       </Typography>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 4 }}>
+        <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
       )}
 
-      <Grid container spacing={3}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(3, 1fr)",
+            lg: "repeat(4, 1fr)",
+          },
+          gap: 2,
+        }}
+      >
         {loading
           ? Array.from({ length: 8 }).map((_, index) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
-              <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />
+            <Box key={index}>
+              <Skeleton variant="rectangular" height={180} />
               <Skeleton variant="text" sx={{ mt: 1 }} />
               <Skeleton variant="text" width="60%" />
-            </Grid>
+            </Box>
           ))
           : products.map((product) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
-              <ProductCard product={product} />
-            </Grid>
+            <ProductCard key={product.id} product={product} />
           ))}
-      </Grid>
+      </Box>
     </Box>
   );
 }
