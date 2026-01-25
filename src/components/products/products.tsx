@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import { Box, Typography, Grid, Skeleton, Alert, Chip } from "@mui/material";
+import { Box, Typography, Skeleton, Alert, Chip } from "@mui/material";
 import { Package } from "lucide-react";
 import ProductCard from "./ProductCard";
 import ProductFilters from "./ProductFilters";
-import { Product } from "../../types/types";
+import type { Product } from "../../types/types";
 
 function Products() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -99,21 +99,30 @@ function Products() {
                 )}
             </Box>
 
-            <Grid container spacing={3}>
+            <Box
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: {
+                        xs: "1fr",
+                        sm: "repeat(2, 1fr)",
+                        md: "repeat(3, 1fr)",
+                        lg: "repeat(4, 1fr)",
+                    },
+                    gap: 3,
+                }}
+            >
                 {loading
                     ? Array.from({ length: 8 }).map((_, index) => (
-                        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
+                        <Box key={index}>
                             <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />
                             <Skeleton variant="text" sx={{ mt: 1 }} />
                             <Skeleton variant="text" width="60%" />
-                        </Grid>
+                        </Box>
                     ))
                     : filteredProducts.map((product) => (
-                        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
-                            <ProductCard product={product} />
-                        </Grid>
+                        <ProductCard key={product.id} product={product} />
                     ))}
-            </Grid>
+            </Box>
 
             {!loading && filteredProducts.length === 0 && (
                 <Box sx={{ textAlign: "center", py: 8 }}>
