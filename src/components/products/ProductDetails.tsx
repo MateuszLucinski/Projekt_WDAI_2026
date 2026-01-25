@@ -11,12 +11,11 @@ import {
     Paper,
     Breadcrumbs,
 } from "@mui/material";
-import Grid from "@mui/material/Grid";
 import { ShoppingCart, Star, Package, ArrowLeft, Check } from "lucide-react";
 import QuantitySelector from "../common/QuantitySelector";
 import ReviewForm from "./ReviewForm";
 import ReviewList from "./ReviewList";
-import { Product, Review } from "../../types/types";
+import type { Product, Review } from "../../types/types";
 
 function ProductDetails() {
     const { id } = useParams<{ id: string }>();
@@ -78,16 +77,21 @@ function ProductDetails() {
         return (
             <Box>
                 <Skeleton variant="text" width={200} height={40} />
-                <Grid container spacing={4} sx={{ mt: 2 }}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 2 }} />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
+                <Box
+                    sx={{
+                        display: "grid",
+                        gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                        gap: 4,
+                        mt: 2,
+                    }}
+                >
+                    <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 2 }} />
+                    <Box>
                         <Skeleton variant="text" height={60} />
                         <Skeleton variant="text" width="60%" />
                         <Skeleton variant="text" height={100} />
-                    </Grid>
-                </Grid>
+                    </Box>
+                </Box>
             </Box>
         );
     }
@@ -120,32 +124,36 @@ function ProductDetails() {
                 <Typography color="text.primary">{product.title}</Typography>
             </Breadcrumbs>
 
-            <Grid container spacing={4}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                    <Paper
-                        sx={{
-                            p: 4,
-                            bgcolor: "white",
-                            borderRadius: 3,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            minHeight: 400,
+            <Box
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                    gap: 4,
+                }}
+            >
+                <Paper
+                    sx={{
+                        p: 4,
+                        bgcolor: "white",
+                        borderRadius: 3,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        minHeight: 400,
+                    }}
+                >
+                    <img
+                        src={product.image}
+                        alt={product.title}
+                        style={{
+                            maxWidth: "100%",
+                            maxHeight: 350,
+                            objectFit: "contain",
                         }}
-                    >
-                        <img
-                            src={product.image}
-                            alt={product.title}
-                            style={{
-                                maxWidth: "100%",
-                                maxHeight: 350,
-                                objectFit: "contain",
-                            }}
-                        />
-                    </Paper>
-                </Grid>
+                    />
+                </Paper>
 
-                <Grid size={{ xs: 12, md: 6 }}>
+                <Box>
                     <Chip
                         label={product.category}
                         sx={{
@@ -206,14 +214,6 @@ function ProductDetails() {
                         fullWidth
                         startIcon={<ShoppingCart size={20} />}
                         disabled={product.stock === 0}
-                        sx={{
-                            py: 1.5,
-                            fontSize: "1.1rem",
-                            background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
-                            "&:hover": {
-                                background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
-                            },
-                        }}
                     >
                         Dodaj do koszyka
                     </Button>
@@ -222,8 +222,8 @@ function ProductDetails() {
                         <Check size={16} />
                         <Typography variant="body2">Darmowa dostawa od 200 zł</Typography>
                     </Box>
-                </Grid>
-            </Grid>
+                </Box>
+            </Box>
 
             <Divider sx={{ my: 6 }} />
 
@@ -232,14 +232,16 @@ function ProductDetails() {
                     Opinie klientów ({reviews.length})
                 </Typography>
 
-                <Grid container spacing={4}>
-                    <Grid size={{ xs: 12, md: 5 }}>
-                        <ReviewForm onSubmit={handleAddReview} />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 7 }}>
-                        <ReviewList reviews={reviews} />
-                    </Grid>
-                </Grid>
+                <Box
+                    sx={{
+                        display: "grid",
+                        gridTemplateColumns: { xs: "1fr", md: "5fr 7fr" },
+                        gap: 4,
+                    }}
+                >
+                    <ReviewForm onSubmit={handleAddReview} />
+                    <ReviewList reviews={reviews} />
+                </Box>
             </Box>
         </Box>
     );
