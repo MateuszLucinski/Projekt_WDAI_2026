@@ -1,19 +1,32 @@
 const jwt = require('jsonwebtoken');
+const SECRET_KEY = 'your-secret-key'; // W przyszłości trzymaj to w .env
 
-exports.check = (req, res, next) => {
+// Sprawdza, czy użytkownik jest w ogóle zalogowany
+exports.authenticate = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  if (!authHeader)
-    return res.status(401).json({ error: 'No authorization header provided' });
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Brak nagłówka autoryzacji' });
+  }
 
   const [type, token] = authHeader.split(' ');
-  if (type !== 'Bearer')
-    return res.status(401).json({ error: 'Invalid authorization format' });
+  if (type !== 'Bearer' || !token) {
+    return res.status(401).json({ error: 'Niepoprawny format tokena (użyj Bearer)' });
+  }
 
   try {
-    const decoded = jwt.verify(token, 'your-secret-key');
-    req.user = decoded;
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded; // Tutaj mamy id, email i isAdmin z tokena
     next();
-  } catch {
-    res.status(401).json({ error: 'Invalid or expired token' });
+  } catch (err) {
+    res.status(401).json({ error: 'Token nieaktywny lub wygasł' });
+  }
+};
+
+// Sprawdza, czy zalogowany użytkownik ma rangę admina
+exports.isAdmin = (req, res, next) => {
+  if (req.user && req.user.isAdmin === true) {
+    next();
+  } else {
+    res.status(403).json({ error: 'Wymagane uprawnienia administratora' });
   }
 };

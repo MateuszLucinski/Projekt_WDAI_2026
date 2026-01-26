@@ -29,7 +29,7 @@ app.post("/api/register", async (req, res) => {
 
     const [user, created] = await User.findOrCreate({
       where: { email },
-      defaults: { password: hashedPassword },
+      defaults: { password: password, isAdmin: false},
     });
 
     if (!created) {

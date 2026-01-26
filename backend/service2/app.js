@@ -8,8 +8,11 @@ const PORT = process.env.PORT || 3002;
 const sequelize = require("./common/database");
 const defineOrder = require("./common/models/Orders");
 const { where } = require("sequelize");
-const { check } = require("./common/middlewares/IsAuthenticated");
+const  check  = require("./common/middlewares/IsAuthenticated");
 const Order = defineOrder(sequelize);
+
+const cors = require("cors");
+app.use(cors());
 
 app.get("/status", (req, res) => {
   res.json({
@@ -18,7 +21,7 @@ app.get("/status", (req, res) => {
   });
 });
 
-app.get("/api/orders/:userId", async (req, res) => {
+app.get("/api/orders/:userId",check.authenticate, async (req, res) => {
   try {
     const { userId } = req.params;
     const orders = await Order.findAll({ where: { userId } });
@@ -34,7 +37,7 @@ app.get("/api/orders/:userId", async (req, res) => {
   }
 });
 
-app.post("/api/orders", check, async (req, res) => {
+app.post("/api/orders", check.authenticate, check.isAdmin, async (req, res) => {
   try {
     const { userId, bookId, quantity } = req.body;
 
@@ -60,7 +63,7 @@ app.post("/api/orders", check, async (req, res) => {
   }
 });
 
-app.delete("/api/orders/:orderId", check, async (req, res) => {
+app.delete("/api/orders/:orderId", check.authenticate, async (req, res) => {
   try {
     const { orderId } = req.params;
 

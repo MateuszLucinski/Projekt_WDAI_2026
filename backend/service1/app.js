@@ -4,8 +4,11 @@ const app = express();
 const sequelize = require("./common/database");
 const defineBook = require("./common/models/Books");
 const { where } = require("sequelize");
-const { check } = require("./common/middlewares/IsAuthenticated");
+const  check  = require("./common/middlewares/IsAuthenticated");
 const Book = defineBook(sequelize);
+
+const cors = require("cors");
+app.use(cors());
 
 app.use(express.json());
 const PORT = process.env.PORT || 3001;
@@ -39,7 +42,7 @@ app.get("/api/books/:bookId", async (req, res) => {
   }
 });
 
-app.post("/api/books", check, async (req, res) => {
+app.post("/api/books", check.authenticate, async (req, res) => {
   try {
     const { title, author, year } = req.body;
 
@@ -61,7 +64,7 @@ app.post("/api/books", check, async (req, res) => {
   }
 });
 
-app.delete("/api/books/:bookId", check, async (req, res) => {
+app.delete("/api/books/:bookId", check.authenticate, check.isAdmin, async (req, res) => {
   try {
     const { bookId } = req.params;
 
