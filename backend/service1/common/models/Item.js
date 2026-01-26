@@ -8,6 +8,7 @@ const Item = sequelize.define("item", {
   price: { type: DataTypes.REAL, allowNull: false },
   stock: { type: DataTypes.INTEGER, defaultValue: 0 },
   image: { type: DataTypes.STRING, allowNull: true },
+  category: { type: DataTypes.STRING, allowNull: false },
 });
 
 module.exports = Item;

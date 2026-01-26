@@ -11,12 +11,30 @@ import {
 } from "@mui/material";
 import { ShoppingCart, Star } from "lucide-react";
 import type { Product } from "../../types/types";
+import { useCart } from "../../context/CartContext";
 
 interface ProductCardProps {
     product: Product;
 }
 
 function ProductCard({ product }: ProductCardProps) {
+
+    const { addToCart } = useCart();
+
+    const handleAddToCart = ({product} : ProductCardProps) => {
+        if (product) {
+            addToCart({
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                image: product.image
+            }, 1);
+            
+            // Opcjonalnie: alert o sukcesie
+            alert(`Dodano 1 szt. produktu do koszyka!`);
+        }
+    };
+
     return (
         <Card
             sx={{
@@ -92,6 +110,7 @@ function ProductCard({ product }: ProductCardProps) {
                     variant="contained"
                     fullWidth
                     startIcon={<ShoppingCart size={18} />}
+                    onClick={()=>handleAddToCart({product})}
                 >
                     Do koszyka
                 </Button>
