@@ -16,9 +16,11 @@ import QuantitySelector from "../common/QuantitySelector";
 import ReviewForm from "./ReviewForm";
 import ReviewList from "./ReviewList";
 import type { Product, Review } from "../../types/types";
+import { useCart } from "../../context/CartContext";
 
 function ProductDetails() {
     const { id } = useParams<{ id: string }>();
+    const { addToCart } = useCart();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -43,6 +45,21 @@ function ProductDetails() {
             date: "2026-01-10",
         },
     ]);
+
+    const handleAddToCart = () => {
+        if (product) {
+            addToCart({
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                image: product.image
+            }, quantity); // Przekazujemy aktualny stan quantity
+            
+            // Opcjonalnie: alert o sukcesie
+            alert(`Dodano ${quantity} szt. produktu do koszyka!`);
+        }
+    };
+
 
     useEffect(() => {
         fetch(`https://fakestoreapi.com/products/${id}`)
@@ -214,6 +231,7 @@ function ProductDetails() {
                         fullWidth
                         startIcon={<ShoppingCart size={20} />}
                         disabled={product.stock === 0}
+                        onClick={handleAddToCart}
                     >
                         Dodaj do koszyka
                     </Button>

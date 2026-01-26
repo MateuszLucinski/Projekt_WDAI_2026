@@ -1,3 +1,5 @@
+//service2
+
 const express = require("express");
 const app = express();
 
@@ -8,8 +10,11 @@ const PORT = process.env.PORT || 3002;
 const sequelize = require("./common/database");
 const defineOrder = require("./common/models/Orders");
 const { where } = require("sequelize");
-const { check } = require("./common/middlewares/IsAuthenticated");
+const  check  = require("./common/middlewares/IsAuthenticated");
 const Order = defineOrder(sequelize);
+
+const cors = require("cors");
+app.use(cors());
 
 app.get("/status", (req, res) => {
   res.json({
@@ -18,7 +23,7 @@ app.get("/status", (req, res) => {
   });
 });
 
-app.get("/api/orders/:userId", async (req, res) => {
+app.get("/api/orders/:userId", check.authenticate, async (req, res) => {
   try {
     const { userId } = req.params;
     const orders = await Order.findAll({ where: { userId } });
@@ -34,22 +39,22 @@ app.get("/api/orders/:userId", async (req, res) => {
   }
 });
 
-app.post("/api/orders", check, async (req, res) => {
+app.post("/api/orders", check.authenticate, async (req, res) => {
   try {
-    const { userId, bookId, quantity } = req.body;
+    const { userId, itemId, quantity } = req.body;
 
-    if (!userId || !bookId || !quantity) {
+    if (!userId || !itemId || !quantity) {
       return res.status(400).json({ error: "Brak wymaganych danych" });
     }
 
-    const response = await fetch(`http://localhost:3001/api/books/${bookId}`);
-    if (!response.ok) {
-      return res.status(404).json({ error: "Książka nie istnieje" });
-    }
+    // const response = await fetch(`http://localhost:3001/api/items/${itemId}`);
+    // if (!response.ok) {
+    //   return res.status(404).json({ error: "Produkt nie istnieje" });
+    // }
 
     const order = await Order.create({
       userId,
-      bookId,
+      itemId,
       quantity,
     });
 
@@ -60,7 +65,7 @@ app.post("/api/orders", check, async (req, res) => {
   }
 });
 
-app.delete("/api/orders/:orderId", check, async (req, res) => {
+app.delete("/api/orders/:orderId", check.authenticate, async (req, res) => {
   try {
     const { orderId } = req.params;
 
@@ -77,7 +82,7 @@ app.delete("/api/orders/:orderId", check, async (req, res) => {
   }
 });
 
-app.patch("/api/orders/:orderId", check, async (req, res) => {
+app.patch("/api/orders/:orderId", check.authenticate, async (req, res) => {
   try {
     const orderIdInt = parseInt(req.params.orderId, 10);
     const { quantity } = req.body;

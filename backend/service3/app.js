@@ -1,4 +1,4 @@
-// service3/app.js
+// service3
 
 const express = require("express");
 const app = express();
@@ -29,7 +29,7 @@ app.post("/api/register", async (req, res) => {
 
     const [user, created] = await User.findOrCreate({
       where: { email },
-      defaults: { password: hashedPassword },
+      defaults: { password: password, isAdmin: false},
     });
 
     if (!created) {
@@ -68,7 +68,14 @@ app.post("/api/login", async (req, res) => {
     }
 
     const accessToken = generateAccessToken(user.email, user.id);
-    res.json({ token: accessToken , user:{email: user.email, id:user.id}});
+    res.json({ 
+      token: accessToken, 
+      user: {
+        id: user.id,
+        email: user.email, 
+        isAdmin: user.isAdmin
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Błąd podczas logowania" });
