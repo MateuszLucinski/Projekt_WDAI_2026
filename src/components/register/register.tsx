@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 interface User {
   email: string;
@@ -17,95 +17,91 @@ function Register() {
   const [password2, setPassword2] = useState<string>("");
   const [resultMessage, setResultMessage] = useState<string>("");
 
-  let message: string = "Podaj dane do rejestracji";
-  if (email != "" && !emailPattern.test(email)) {
-    message = "Niepoprawny adres Email";
-  }
+  // Walidacja formularza
+  const { message, isValid } = useMemo(() => {
+    if (email === "" || password1 === "" || password2 === "") {
+      return { message: "Podaj wszystkie wymagane dane", isValid: false };
+    }
+    if (!emailPattern.test(email)) {
+      return { message: "Niepoprawny adres Email", isValid: false };
+    }
+    if (password1 !== password2) {
+      return { message: "Hasła nie są zgodne", isValid: false };
+    }
+    if (!passwordPattern.test(password1)) {
+      return {
+        message:
+          "Hasło musi mieć min. 8 znaków, 1 dużą literę, 1 cyfrę i 1 znak specjalny",
+        isValid: false,
+      };
+    }
+    return { message: "", isValid: true };
+  }, [email, password1, password2]);
 
-  if (!(password1 == password2)) {
-    message = "Hasła nie są zgodne";
-  } 
-
-  if (password1 !== "" && !passwordPattern.test(password1)) {
-    message =
-      "Hasło musi mieć min. 8 znaków, 1 dużą literę, 1 cyfrę i 1 znak specjalny";
-  }
-
-  if (
-    password1 == password2 &&
-    password1 != "" &&
-    email != "" &&
-    emailPattern.test(email)
-  ) {
-    message = "";
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const tryingUser: User = { email: email, password: password1 };
+    if (!isValid) return;
 
-    //register the new user
-    fetch("http://localhost:3003/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(tryingUser),
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          // jeśli backend zwraca np. 401
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Błąd rejestracji");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setEmail("");
-        setPassword1("");
-        setPassword2("");
-        setResultMessage("Zarejestrowane użykownika");
-        console.log("Zarejestrowano:", data);
-      })
-      .catch((error) => {
-        setResultMessage(error.message);
-        console.error("Error:", error);
+    const tryingUser: User = { email, password: password1 };
+
+    try {
+      const response = await fetch("http://localhost:3003/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tryingUser),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Błąd rejestracji");
+      }
+
+      const data = await response.json();
+      setEmail("");
+      setPassword1("");
+      setPassword2("");
+      setResultMessage("Zarejestrowano użytkownika");
+      console.log("Zarejestrowano:", data);
+    } catch (error) {
+      setResultMessage("Błąd dodawania użytkownika");
+      console.error("Error:", error);
+    }
   };
 
   return (
     <>
-      <form onSubmit={(e) => handleSubmit(e)}>
+      <form onSubmit={handleSubmit}>
         <label>
           Podaj email:{" "}
           <input
             type="text"
-            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
+
         <label>
-          Podaj haslo:{" "}
+          Podaj hasło:{" "}
           <input
             type="password"
             value={password1}
             onChange={(e) => setPassword1(e.target.value)}
           />
         </label>
+
         <label>
-          Powtórz haslo:{" "}
+          Powtórz hasło:{" "}
           <input
             type="password"
             value={password2}
             onChange={(e) => setPassword2(e.target.value)}
           />
         </label>
-        {message != "" && <p>{message}</p>}
-        {resultMessage != "" && <p>{resultMessage}</p>}
-        <input
-          type="submit"
-          disabled={message != ""}
-          value={"Zarejestruj się"}
-        />
+
+        {message && <p style={{ color: "red" }}>{message}</p>}
+        {resultMessage && <p>{resultMessage}</p>}
+
+        <input type="submit" disabled={!isValid} value="Zarejestruj się" />
       </form>
     </>
   );

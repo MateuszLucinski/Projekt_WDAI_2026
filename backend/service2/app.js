@@ -39,6 +39,74 @@ app.get("/api/orders/:userId", check.authenticate, async (req, res) => {
   }
 });
 
+
+const { Op, fn, col } = require("sequelize");
+
+/**
+ * GET all reviews + stats for item + user email
+ */
+app.get("/api/items/:itemId/reviews", async (req, res) => {
+  try {
+    const { itemId } = req.params;
+
+    // pobranie opinii wraz z powiązanym użytkownikiem
+    const reviews = await Order.findAll({
+      where: {
+        itemId,
+        reviewStars: { [Op.not]: null },
+      },
+      attributes: ["id", "userId", "reviewStars", "reviewContent", "createdAt"],
+    });
+
+    if (reviews.length === 0) {
+      return res.status(404).json({
+        message: "Brak opinii dla tego produktu",
+        reviewsCount: 0,
+        averageRating: null,
+        reviews: [],
+      });
+    }
+
+    // agregaty
+    const stats = await Order.findOne({
+      where: {
+        itemId,
+        reviewStars: { [Op.not]: null },
+      },
+      attributes: [
+        [fn("AVG", col("reviewStars")), "averageRating"],
+        [fn("COUNT", col("reviewStars")), "reviewsCount"],
+      ],
+      raw: true,
+    });
+
+    // mapowanie opinii, dodanie email użytkownika
+    const mappedReviews = reviews.map((r) => ({
+      id: r.id,
+      userId: r.userId,
+      userEmail: "Anonim",
+      reviewStars: r.reviewStars,
+      reviewContent: r.reviewContent,
+      createdAt: r.createdAt,
+    }));
+
+    res.json({
+      itemId: Number(itemId),
+      reviewsCount: Number(stats.reviewsCount),
+      averageRating: Number(Number(stats.averageRating).toFixed(2)),
+      reviews: mappedReviews,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Błąd podczas pobierania opinii o produkcie",
+    });
+  }
+});
+
+
+
+
 app.post("/api/orders", check.authenticate, async (req, res) => {
   try {
     const { userId, itemId, quantity } = req.body;
@@ -47,10 +115,13 @@ app.post("/api/orders", check.authenticate, async (req, res) => {
       return res.status(400).json({ error: "Brak wymaganych danych" });
     }
 
-    // const response = await fetch(`http://localhost:3001/api/items/${itemId}`);
-    // if (!response.ok) {
-    //   return res.status(404).json({ error: "Produkt nie istnieje" });
-    // }
+    const response = await fetch(`http://localhost:3001/api/items/${itemId}`);
+    if (!response.ok) {
+      return res.status(404).json({ error: "Produkt nie istnieje" });
+    }
+    if (response.quantity<quantity) {
+      return res.status(404).json({ error: "Za małą ilość produktu w magazynie" });
+    }
 
     const order = await Order.create({
       userId,
@@ -64,6 +135,70 @@ app.post("/api/orders", check.authenticate, async (req, res) => {
     res.status(500).json({ error: "Błąd podczas dodawania zamówień" });
   }
 });
+
+
+/**
+ * ADD review to order
+ */
+app.post(
+  "/api/orders/:orderId/review",
+  check.authenticate,
+  async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.orderId, 10);
+      const { reviewStars, reviewContent } = req.body;
+
+      if (!reviewStars || reviewStars < 1 || reviewStars > 5) {
+        return res.status(400).json({
+          error: "Ocena musi być liczbą od 1 do 5",
+        });
+      }
+
+      const order = await Order.findByPk(orderId);
+
+      if (!order) {
+        return res.status(404).json({
+          error: "Zamówienie nie znalezione",
+        });
+      }
+
+
+      if (order.userId !== req.user.userId) {
+        return res.status(403).json({
+          error: "Brak uprawnień do dodania opinii",
+        });
+      }
+
+      if (order.reviewStars !== null) {
+        return res.status(409).json({
+          error: "Opinia do tego zamówienia już istnieje",
+        });
+      }
+
+      order.reviewStars = reviewStars;
+      order.reviewContent = reviewContent || null;
+
+      await order.save();
+
+      res.status(201).json({
+        message: "Opinia została dodana",
+        review: {
+          orderId: order.id,
+          itemId: order.itemId,
+          reviewStars: order.reviewStars,
+          reviewContent: order.reviewContent,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: "Błąd podczas dodawania opinii",
+      });
+    }
+  }
+);
+
+
 
 app.delete("/api/orders/:orderId", check.authenticate, async (req, res) => {
   try {
