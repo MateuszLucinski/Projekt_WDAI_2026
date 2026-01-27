@@ -52,7 +52,7 @@ app.get("/api/items/:itemId", async (req, res) => {
 /**
  * CREATE item
  */
-app.post("/api/items", async (req, res) => {
+app.post("/api/items",check.authenticate, check.isAdmin, async (req, res) => {
   try {
     const { title, description, price, stock, image, category } = req.body;
 

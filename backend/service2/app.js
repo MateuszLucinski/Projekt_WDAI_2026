@@ -23,6 +23,28 @@ app.get("/status", (req, res) => {
   });
 });
 
+/**
+ * GET all orders (admin)
+ */
+app.get("/api/orders", check.authenticate, check.isAdmin, async (req, res) => {
+  try {
+    const orders = await Order.findAll();
+
+    if (orders.length === 0) {
+      return res.status(404).json({ message: "Brak zamówień" });
+    }
+
+    res.json(orders);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Błąd podczas pobierania wszystkich zamówień",
+    });
+  }
+});
+
+
+
 app.get("/api/orders/:userId", check.authenticate, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -215,8 +237,43 @@ app.post(
 );
 
 
+/**
+ * RESET review for order (set reviewStars & reviewContent to null)
+ */
+app.patch(
+  "/api/orders/:orderId/review/reset",
+  check.authenticate, check.isAdmin,
+  async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.orderId, 10);
 
-app.delete("/api/orders/:orderId", check.authenticate, async (req, res) => {
+      const order = await Order.findByPk(orderId);
+      if (!order) {
+        return res.status(404).json({
+          error: "Zamówienie nie znalezione",
+        });
+      }
+
+      order.reviewStars = null;
+      order.reviewContent = null;
+      await order.save();
+
+      res.json({
+        message: "Opinia została usunięta",
+        orderId: order.id,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: "Błąd podczas resetowania opinii",
+      });
+    }
+  }
+);
+
+
+
+app.delete("/api/orders/:orderId", check.authenticate,async (req, res) => {
   try {
     const { orderId } = req.params;
 

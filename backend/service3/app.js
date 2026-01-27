@@ -71,8 +71,17 @@ app.post("/api/register", async (req, res) => {
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const generateAccessToken = (email, userId) =>
-  jwt.sign({ email, userId }, "your-secret-key", { expiresIn: "24h" });
+const generateAccessToken = (user) =>
+  jwt.sign(
+    {
+      userId: user.id,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    },
+    "your-secret-key",
+    { expiresIn: "24h" }
+  );
+
 
 app.post("/api/login", async (req, res) => {
   try {
@@ -92,7 +101,7 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json({ error: "Niepoprawne dane logowania" });
     }
 
-    const accessToken = generateAccessToken(user.email, user.id);
+    const accessToken = generateAccessToken(user);
     res.json({ 
       token: accessToken, 
       user: {
