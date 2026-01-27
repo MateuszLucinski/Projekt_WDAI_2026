@@ -18,6 +18,31 @@ app.get("/status", (req, res) => {
   res.json({ status: "Running", timestamp: new Date().toISOString() });
 });
 
+
+app.get("/api/users/:userId/email", async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId, 10);
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: "Niepoprawne ID użytkownika" });
+    }
+
+    const user = await User.findByPk(userId, {
+      attributes: ["email"],
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "Użytkownik nie znaleziony" });
+    }
+
+    res.json({ id: userId, email: user.email });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Błąd podczas pobierania użytkownika" });
+  }
+});
+
+
+
 app.post("/api/register", async (req, res) => {
   try {
     const { email, password } = req.body;
