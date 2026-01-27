@@ -300,6 +300,12 @@ app.patch("/api/orders/:orderId", check.authenticate, async (req, res) => {
       return res.status(404).json({ error: "Zamówienie nie znalezione" });
     }
 
+     if (order.userId !== req.user.userId) {
+      return res.status(403).json({
+        error: "Nie masz uprawnień do modyfikacji tego zamówienia",
+      });
+    }
+
     order.quantity = quantity;
     await order.save();
 
