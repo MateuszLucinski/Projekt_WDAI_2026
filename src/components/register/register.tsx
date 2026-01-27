@@ -1,4 +1,15 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import {
+  Container,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  Box,
+  CircularProgress
+} from "@mui/material";
 
 interface User {
   email: string;
@@ -16,6 +27,8 @@ function Register() {
   const [password1, setPassword1] = useState<string>("");
   const [password2, setPassword2] = useState<string>("");
   const [resultMessage, setResultMessage] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Walidacja formularza
   const { message, isValid } = useMemo(() => {
@@ -42,6 +55,10 @@ function Register() {
     e.preventDefault();
     if (!isValid) return;
 
+    setLoading(true);
+    setError(null);
+    setResultMessage("");
+
     const tryingUser: User = { email, password: password1 };
 
     try {
@@ -60,50 +77,109 @@ function Register() {
       setEmail("");
       setPassword1("");
       setPassword2("");
-      setResultMessage("Zarejestrowano użytkownika");
+      setResultMessage("Zarejestrowano użytkownika pomyślnie. Możesz się teraz zalogować.");
       console.log("Zarejestrowano:", data);
-    } catch (error) {
-      setResultMessage("Błąd dodawania użytkownika");
-      console.error("Error:", error);
+    } catch (err: any) {
+      setError(err.message || "Błąd dodawania użytkownika");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Podaj email:{" "}
-          <input
-            type="text"
+    <Container maxWidth="xs" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '80vh' }}>
+      <Paper
+        elevation={6}
+        sx={{
+          p: 4,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          backdropFilter: 'blur(10px)',
+          backgroundColor: 'rgba(30, 30, 30, 0.8)', // Consistent with theme/Login
+          borderRadius: 4
+        }}
+      >
+        <Box sx={{ mb: 4, textAlign: 'center' }}>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
+            Rejestracja
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Utwórz nowe konto
+          </Typography>
+        </Box>
+
+        {error && <Alert severity="error" sx={{ width: '100%', mb: 2 }}>{error}</Alert>}
+        {resultMessage && <Alert severity="success" sx={{ width: '100%', mb: 2 }}>{resultMessage}</Alert>}
+
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Adres Email"
+            name="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+            error={email !== "" && !emailPattern.test(email)}
           />
-        </label>
-
-        <label>
-          Podaj hasło:{" "}
-          <input
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Hasło"
             type="password"
+            id="password"
             value={password1}
             onChange={(e) => setPassword1(e.target.value)}
+            disabled={loading}
           />
-        </label>
-
-        <label>
-          Powtórz hasło:{" "}
-          <input
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirmPassword"
+            label="Powtórz Hasło"
             type="password"
+            id="confirmPassword"
             value={password2}
             onChange={(e) => setPassword2(e.target.value)}
+            disabled={loading}
+            error={password2 !== "" && password1 !== password2}
+            helperText={password2 !== "" && password1 !== password2 ? "Hasła muszą być identyczne" : ""}
           />
-        </label>
 
-        {message && <p style={{ color: "red" }}>{message}</p>}
-        {resultMessage && <p>{resultMessage}</p>}
+          {!isValid && message && (
+            <Alert severity="warning" sx={{ mt: 2, width: '100%' }}>
+              {message}
+            </Alert>
+          )}
 
-        <input type="submit" disabled={!isValid} value="Zarejestruj się" />
-      </form>
-    </>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            size="large"
+            disabled={!isValid || loading}
+            sx={{ mt: 3, mb: 2, py: 1.5, fontSize: '1.1rem' }}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Utwórz konto"}
+          </Button>
+
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Link to="/login" style={{ textDecoration: 'none', color: '#2196f3' }}>
+              <Typography variant="body2">
+                Masz już konto? Zaloguj się
+              </Typography>
+            </Link>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   );
 }
 
