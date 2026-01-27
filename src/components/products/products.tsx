@@ -14,7 +14,7 @@ function Products() {
     const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
 
     useEffect(() => {
-        fetch("https://fakestoreapi.com/products")
+        fetch("http://localhost:3001/api/items")
             .then((res) => {
                 if (!res.ok) throw new Error("Błąd pobierania produktów");
                 return res.json();

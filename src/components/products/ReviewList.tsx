@@ -29,19 +29,19 @@ function ReviewList({ reviews }: ReviewListProps) {
                                 fontWeight: 600,
                             }}
                         >
-                            {review.userName.charAt(0).toUpperCase()}
+                            {review.userEmail[0]}
                         </Avatar>
                         <Box sx={{ flexGrow: 1 }}>
                             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
                                 <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                                    {review.userName}
+                                    {review.userEmail}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    {new Date(review.date).toLocaleDateString("pl-PL")}
+                                    {review.createdAt.slice(0,10)}
                                 </Typography>
                             </Box>
                             <Rating
-                                value={review.rating}
+                                value={review.reviewStars}
                                 readOnly
                                 size="small"
                                 sx={{
@@ -52,7 +52,7 @@ function ReviewList({ reviews }: ReviewListProps) {
                                 }}
                             />
                             <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                                {review.text}
+                                {review.reviewContent}
                             </Typography>
                         </Box>
                     </Box>

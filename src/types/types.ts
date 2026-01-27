@@ -6,20 +6,16 @@ export interface Product {
   category: string;
   image: string;
   stock: number;
-  rating: {
-    rate: number;
-    count: number;
-  };
 }
 
 export interface Review {
   id: number;
   productId: number;
   userId: number;
-  userName: string;
-  rating: number;
-  text: string;
-  date: string;
+  userEmail: string;
+  reviewStars: number;
+  reviewContent: string;
+  createdAt: string;
 }
 
 export interface CartItem {
