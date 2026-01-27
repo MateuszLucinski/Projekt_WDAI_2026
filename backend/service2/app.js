@@ -49,7 +49,7 @@ app.get("/api/items/:itemId/reviews", async (req, res) => {
   try {
     const { itemId } = req.params;
 
-    // pobranie opinii wraz z powiązanym użytkownikiem
+    // pobranie opinii
     const reviews = await Order.findAll({
       where: {
         itemId,
@@ -80,15 +80,30 @@ app.get("/api/items/:itemId/reviews", async (req, res) => {
       raw: true,
     });
 
-    // mapowanie opinii, dodanie email użytkownika
-    const mappedReviews = reviews.map((r) => ({
-      id: r.id,
-      userId: r.userId,
-      userEmail: "Anonim",
-      reviewStars: r.reviewStars,
-      reviewContent: r.reviewContent,
-      createdAt: r.createdAt,
-    }));
+    // pobranie emaili dla wszystkich userId
+    const mappedReviews = await Promise.all(
+      reviews.map(async (r) => {
+        let userEmail = "Anonim";
+        try {
+          const response = await fetch(`http://localhost:3003/api/users/${r.userId}/email`);
+          if (response.ok) {
+            const data = await response.json();
+            userEmail = data.email || "Anonim";
+          }
+        } catch (err) {
+          console.error(`Nie udało się pobrać emaila dla userId=${r.userId}`, err);
+        }
+
+        return {
+          id: r.id,
+          userId: r.userId,
+          userEmail,
+          reviewStars: r.reviewStars,
+          reviewContent: r.reviewContent,
+          createdAt: r.createdAt,
+        };
+      })
+    );
 
     res.json({
       itemId: Number(itemId),
@@ -103,6 +118,7 @@ app.get("/api/items/:itemId/reviews", async (req, res) => {
     });
   }
 });
+
 
 
 
