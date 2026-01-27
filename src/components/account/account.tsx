@@ -21,6 +21,15 @@ function Account() {
         navigate("/login");
     };
 
+    const handleOrderHist = () => {
+        if(user?.isAdmin){
+             navigate("/all_orders");
+        }
+        else{
+            navigate("/orders");
+        }   
+    }
+
     return (
         <Container maxWidth="sm" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '80vh' }}>
             <Paper
@@ -99,7 +108,7 @@ function Account() {
                         variant="outlined"
                         size="large"
                         startIcon={<ListOrdered />}
-                        onClick={() => navigate("/orders")}
+                        onClick={handleOrderHist}
                         fullWidth
                         sx={{ py: 1.5, borderColor: 'rgba(255, 255, 255, 0.2)', color: 'text.primary' }}
                     >
