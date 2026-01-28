@@ -1,8 +1,8 @@
-# 🛒 E-Shop - Prosty Sklep Internetowy
+# E-Shop - Prosty Sklep Internetowy
 
 Projekt prostego sklepu internetowego stworzony na zaliczenie przedmiotu WDAI.
 
-## 📋 Spis treści
+## Spis treści
 
 - [Technologie](#technologie)
 - [Architektura](#architektura)
@@ -15,7 +15,7 @@ Projekt prostego sklepu internetowego stworzony na zaliczenie przedmiotu WDAI.
 
 ---
 
-## 🛠 Technologie
+## Technologie
 
 ### Frontend
 | Technologia | Wersja | Opis |
@@ -39,7 +39,7 @@ Projekt prostego sklepu internetowego stworzony na zaliczenie przedmiotu WDAI.
 
 ---
 
-## 🏗 Architektura
+## Architektura
 
 Projekt wykorzystuje architekturę **mikroserwisową** z trzema niezależnymi serwisami:
 
@@ -62,7 +62,7 @@ Każdy serwis posiada własną bazę SQLite i komunikuje się z frontendem przez
 
 ---
 
-## 📁 Struktura projektu
+## Struktura projektu
 
 ```
 Projekt_WDAI_2026/
@@ -112,7 +112,7 @@ Projekt_WDAI_2026/
 
 ---
 
-## 🔧 Mikroserwisy Backend
+## Mikroserwisy Backend
 
 ### Service 1 - Produkty (Port 3001)
 Zarządza katalogiem produktów.
@@ -159,9 +159,8 @@ Zarządza autentykacją i użytkownikami.
 
 ---
 
-## ✨ Funkcjonalności
+## Funkcjonalności
 
-### ✅ Zrealizowane - Podstawowe
 - [x] **Lista produktów** - pobieranie z API, responsywna siatka
 - [x] **Wyszukiwarka produktów** - wyszukiwanie po nazwie
 - [x] **Filtrowanie kategorii** - dropdown z dynamiczną listą
@@ -178,13 +177,11 @@ Zarządza autentykacją i użytkownikami.
 - [x] **Opinie z gwiazdkami** - ocena 1-5 + komentarz
 - [x] **Wyświetlanie opinii** - na stronie produktu ze średnią
 
-### ✅ Zrealizowane - Rozszerzone
 - [x] **Zachowanie sesji** - localStorage (token + user + cart)
 - [x] **Route Guards** - ProtectedRoute przekierowuje na /login
 - [x] **Walidacja formularzy** - regex dla email i hasła
 - [x] **Dark Theme** - ciemny motyw MUI
 
-### ✅ Zrealizowane - Zaawansowane
 - [x] **Panel Admina** - widok wszystkich zamówień
 - [x] **Usuwanie opinii** - admin może usunąć dowolną opinię
 - [x] **Role użytkowników** - User vs Admin (isAdmin)
@@ -194,7 +191,7 @@ Zarządza autentykacją i użytkownikami.
 
 ---
 
-## 🚀 Instalacja i uruchomienie
+## Instalacja i uruchomienie
 
 ### Wymagania
 - Node.js >= 18
@@ -245,7 +242,7 @@ System wykorzystuje JWT (JSON Web Token):
 
 ---
 
-## 👥 Autorzy
+## Autorzy
 
 | Imię i Nazwisko | Rola |
 |-----------------|------|
@@ -255,6 +252,6 @@ System wykorzystuje JWT (JSON Web Token):
 
 ---
 
-## 📄 Licencja
+## Licencja
 
 Projekt edukacyjny - WDAI 2026
