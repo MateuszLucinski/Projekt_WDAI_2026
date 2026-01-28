@@ -247,8 +247,8 @@ System wykorzystuje JWT (JSON Web Token):
 | Imię i Nazwisko | Rola |
 |-----------------|------|
 | Kacper Hawro | Frontend - UI, produkty, wyszukiwanie |
-| Michał Luciński | Frontend - koszyk, zamówienia, state |
-| Antoni Statek | Backend - mikroserwisy, auth, baza danych |
+| Antoni Statek | Frontend - koszyk, zamówienia, state |
+| Mateusz Luciński | Backend - mikroserwisy, auth, baza danych |
 
 ---
 
